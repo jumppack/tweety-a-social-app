@@ -1,0 +1,22 @@
+syntax = "proto3";
+package tweety.reports;
+
+// User-facing: lets any signed-in user flag a post, comment or user for
+// moderator review. Moderators review reports through AdminService.
+service ReportsService {
+  rpc CreateReport(CreateReportRequest) returns (CreateReportResponse);
+}
+
+message CreateReportRequest {
+  string session_token = 1;
+  string target_type = 2; // 'post' | 'comment' | 'user'
+  string target_id = 3;
+  string reason = 4;
+  optional string description = 5;
+}
+
+message CreateReportResponse {
+  bool success = 1;
+  optional string error = 2;
+  optional string report_id = 3;
+}

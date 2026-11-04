@@ -1,0 +1,284 @@
+syntax = "proto3";
+package tweety.admin;
+
+import "common.proto";
+
+service AdminService {
+  // User Management
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse);
+  rpc GetUserDetails(GetUserDetailsRequest) returns (UserDetailsResponse);
+  rpc BanUser(BanUserRequest) returns (BanUserResponse);
+  rpc UnbanUser(UnbanUserRequest) returns (UnbanUserResponse);
+  rpc UpdateUserRole(UpdateUserRoleRequest) returns (UpdateUserRoleResponse);
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse);
+
+  // Content Moderation
+  rpc DeletePostAdmin(DeletePostAdminRequest) returns (DeletePostAdminResponse);
+  rpc DeleteCommentAdmin(DeleteCommentAdminRequest) returns (DeleteCommentAdminResponse);
+  rpc ListPostsAdmin(ListPostsAdminRequest) returns (ListPostsAdminResponse);
+  rpc GetPostAdmin(GetPostAdminRequest) returns (PostAdminDetailResponse);
+  rpc ListCommentsAdmin(ListCommentsAdminRequest) returns (ListCommentsAdminResponse);
+
+  // Reports
+  rpc ListReports(ListReportsRequest) returns (ListReportsResponse);
+  rpc GetReport(GetReportRequest) returns (ReportResponse);
+  rpc ReviewReport(ReviewReportRequest) returns (ReviewReportResponse);
+
+  // Analytics
+  rpc GetDashboardStats(GetDashboardStatsRequest) returns (DashboardStatsResponse);
+
+  // Audit
+  rpc GetAuditLogs(GetAuditLogsRequest) returns (AuditLogsResponse);
+}
+
+// User Management Messages
+message ListUsersRequest {
+  string session_token = 1;
+  tweety.common.PaginationRequest pagination = 2;
+  optional string search_query = 3;
+  optional string role_filter = 4;
+}
+
+message ListUsersResponse {
+  repeated AdminUserResponse users = 1;
+  int32 total = 2;
+}
+
+message AdminUserResponse {
+  string id = 1;
+  string email = 2;
+  string username = 3;
+  string display_name = 4;
+  optional string avatar_url = 5;
+  optional string bio = 6;
+  string role = 7;
+  tweety.common.Timestamp created_at = 8;
+  tweety.common.Timestamp updated_at = 9;
+  optional tweety.common.Timestamp banned_at = 10;
+  optional string banned_reason = 11;
+  int32 post_count = 12;
+  int32 comment_count = 13;
+}
+
+message GetUserDetailsRequest {
+  string session_token = 1;
+  string user_id = 2;
+}
+
+message UserDetailsResponse {
+  AdminUserResponse user = 1;
+}
+
+message BanUserRequest {
+  string session_token = 1;
+  string user_id = 2;
+  string reason = 3;
+}
+
+message BanUserResponse {
+  bool success = 1;
+  optional string error = 2;
+}
+
+message UnbanUserRequest {
+  string session_token = 1;
+  string user_id = 2;
+}
+
+message UnbanUserResponse {
+  bool success = 1;
+  optional string error = 2;
+}
+
+message UpdateUserRoleRequest {
+  string session_token = 1;
+  string user_id = 2;
+  string role = 3;
+}
+
+message UpdateUserRoleResponse {
+  bool success = 1;
+  optional string error = 2;
+}
+
+message DeleteUserRequest {
+  string session_token = 1;
+  string user_id = 2;
+}
+
+message DeleteUserResponse {
+  bool success = 1;
+  optional string error = 2;
+}
+
+// Content Moderation Messages
+message DeletePostAdminRequest {
+  string session_token = 1;
+  string post_id = 2;
+  string reason = 3;
+}
+
+message DeletePostAdminResponse {
+  bool success = 1;
+  optional string error = 2;
+}
+
+message DeleteCommentAdminRequest {
+  string session_token = 1;
+  string comment_id = 2;
+  string reason = 3;
+}
+
+message DeleteCommentAdminResponse {
+  bool success = 1;
+  optional string error = 2;
+}
+
+message AdminPostResponse {
+  string id = 1;
+  string content = 2;
+  string author_id = 3;
+  string author_username = 4;
+  string author_display_name = 5;
+  int32 like_count = 6;
+  int32 comment_count = 7;
+  int32 report_count = 8; // pending reports
+  tweety.common.Timestamp created_at = 9;
+}
+
+message ListPostsAdminRequest {
+  string session_token = 1;
+  tweety.common.PaginationRequest pagination = 2;
+  optional string search_query = 3;
+  bool reported_only = 4;
+}
+
+message ListPostsAdminResponse {
+  repeated AdminPostResponse posts = 1;
+  int32 total = 2;
+}
+
+message AdminCommentResponse {
+  string id = 1;
+  string content = 2;
+  string post_id = 3;
+  string post_excerpt = 4;
+  string author_id = 5;
+  string author_username = 6;
+  string author_display_name = 7;
+  int32 report_count = 8; // pending reports
+  tweety.common.Timestamp created_at = 9;
+}
+
+message ListCommentsAdminRequest {
+  string session_token = 1;
+  tweety.common.PaginationRequest pagination = 2;
+  optional string search_query = 3;
+  bool reported_only = 4;
+}
+
+message ListCommentsAdminResponse {
+  repeated AdminCommentResponse comments = 1;
+  int32 total = 2;
+}
+
+message GetPostAdminRequest {
+  string session_token = 1;
+  string post_id = 2;
+}
+
+message PostAdminDetailResponse {
+  AdminPostResponse post = 1;
+  repeated AdminCommentResponse comments = 2;
+  repeated ReportResponse reports = 3;
+}
+
+// Reports Messages
+message ListReportsRequest {
+  string session_token = 1;
+  tweety.common.PaginationRequest pagination = 2;
+  optional string status_filter = 3;
+  optional string type_filter = 4;
+}
+
+message ListReportsResponse {
+  repeated ReportResponse reports = 1;
+  int32 total = 2;
+}
+
+message GetReportRequest {
+  string session_token = 1;
+  string report_id = 2;
+}
+
+message ReportResponse {
+  string id = 1;
+  string reporter_id = 2;
+  string reporter_username = 3;
+  string target_type = 4;
+  string target_id = 5;
+  string reason = 6;
+  optional string description = 7;
+  string status = 8;
+  optional string reviewed_by = 9;
+  optional tweety.common.Timestamp reviewed_at = 10;
+  tweety.common.Timestamp created_at = 11;
+  // What was reported, resolved at read time. Absent once the target is deleted.
+  optional string target_preview = 12;
+  optional string target_author_id = 13;
+  optional string target_author_username = 14;
+  optional string target_post_id = 15; // the parent post, for comment reports
+  bool target_exists = 16;
+}
+
+message ReviewReportRequest {
+  string session_token = 1;
+  string report_id = 2;
+  string action = 3; // 'dismiss' | 'remove_content' | 'ban_user'
+  optional string notes = 4;
+}
+
+message ReviewReportResponse {
+  bool success = 1;
+  optional string error = 2;
+}
+
+// Analytics Messages
+message GetDashboardStatsRequest {
+  string session_token = 1;
+}
+
+message DashboardStatsResponse {
+  int32 total_users = 1;
+  int32 total_posts = 2;
+  int32 total_comments = 3;
+  int32 pending_reports = 4;
+  int32 new_users_today = 5;
+  int32 new_posts_today = 6;
+  int32 banned_users = 7;
+}
+
+// Audit Messages
+message GetAuditLogsRequest {
+  string session_token = 1;
+  tweety.common.PaginationRequest pagination = 2;
+  optional string admin_id_filter = 3;
+  optional string action_filter = 4;
+}
+
+message AuditLogsResponse {
+  repeated AuditLogResponse logs = 1;
+  int32 total = 2;
+}
+
+message AuditLogResponse {
+  string id = 1;
+  string admin_id = 2;
+  string admin_username = 3;
+  string action = 4;
+  optional string target_type = 5;
+  optional string target_id = 6;
+  optional string details = 7;
+  optional string ip_address = 8;
+  tweety.common.Timestamp created_at = 9;
+}

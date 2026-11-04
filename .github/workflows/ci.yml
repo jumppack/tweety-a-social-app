@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Install, lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # On PRs only packages changed since the base branch (and their dependents) run;
+      # on pushes to main everything runs so the cache is warmed with a full build.
+      TURBO_FILTER: ${{ github.event_name == 'pull_request' && '--affected' || '' }}
+      TURBO_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history so `turbo --affected` can diff against the PR base
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Restore Turborepo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo/cache
+          key: turbo-${{ runner.os }}-${{ github.sha }}
+          restore-keys: turbo-${{ runner.os }}-
+
+      # Each step fails the job immediately, cheapest checks first.
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm exec turbo run lint $TURBO_FILTER
+
+      - name: Typecheck
+        run: pnpm exec turbo run typecheck $TURBO_FILTER
+
+      - name: Unit tests
+        run: pnpm exec turbo run test:unit $TURBO_FILTER
+
+      - name: Build
+        run: pnpm exec turbo run build $TURBO_FILTER
