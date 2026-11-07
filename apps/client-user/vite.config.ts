@@ -10,13 +10,11 @@ import viteTsConfigPaths from "vite-tsconfig-paths";
 
 const currentDir = fileURLToPath(new URL(".", import.meta.url));
 const rootDir = path.resolve(currentDir, "../..");
-const uiPackageDir = path.resolve(rootDir, "packages/ui/src");
 
 const config = defineConfig({
 	resolve: {
 		alias: {
 			"@": path.resolve(currentDir, "src"),
-			"@tweety/ui": uiPackageDir,
 		},
 	},
 	plugins: [

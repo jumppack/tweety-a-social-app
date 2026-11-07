@@ -5,7 +5,7 @@
 ```bash
 pnpm install          # also installs the git pre-commit hook (.githooks/)
 pnpm db:migrate       # creates apps/api/tweety.db
-pnpm db:seed          # test users: see README "Test Accounts"
+pnpm db:seed          # test users: see "Sample accounts" in the README
 pnpm dev              # generates gRPC code, then starts everything
 ```
 

@@ -18,7 +18,6 @@
 	"dependencies": {
 		"@tweety/grpc-client": "workspace:*",
 		"@tweety/proto": "workspace:*",
-		"@tweety/ui": "workspace:*",
 		"@grpc/grpc-js": "^1.12.6",
 		"@stylexjs/stylex": "^0.17.5",
 		"@tanstack/react-devtools": "^0.7.0",

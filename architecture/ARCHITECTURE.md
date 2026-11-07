@@ -192,19 +192,11 @@ erDiagram
 
 ---
 
-## 6. Key UI Layout & Mock Architecture
+## 6. UI Layout
 
-### User Client Interface Mock Structure
-```
-+-----------------------------------------------------------------------------------+
-|  [Sidebar Navigation]    |  [Main Feed View]                | [Right Panel]       |
-|  - Home                  |  +-----------------------------+  | - Search Bar        |
-|  - Explore               |  | Compose Box (Max 280 chars) |  | - Who to follow     |
-|  - Bookmarks             |  +-----------------------------+  | - Trending tags     |
-|  - Profile               |  | Feed Post Item              |  |                     |
-|  - Settings              |  |  - User Avatar & Name       |  |                     |
-|                          |  |  - Post Content Text        |  |                     |
-|                          |  |  - Actions: Like/Bookmark   |  |                     |
-|                          |  +-----------------------------+  |                     |
-+-----------------------------------------------------------------------------------+
-```
+Both apps use a sticky top navigation bar and a centred content column; there are no sidebars.
+
+- **Social app** (`apps/client-user`): Home, Explore, Search and Bookmarks in the header, plus notifications, the signed-in user and Logout. Pages: feed with a compose box, post detail with comments, profiles, search, bookmarks, notifications, login and register.
+- **Admin console** (`apps/client-admin`): Dashboard, Users, Posts, Comments, Reports and Audit Log in the header. List pages use tables or cards with search and filters; destructive actions open a confirmation dialog.
+
+Screenshots of every main screen are in [`docs/screenshots`](../docs/screenshots).
